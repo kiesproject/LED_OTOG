@@ -17,9 +17,6 @@ int n_dt = 0;
 int data_len;
 //パターンの数
 int pattern_num;
-//LEDの数
-int LED_num = 16;
-
 
 void setup() {
   pinMode(SRCLK, OUTPUT);
@@ -32,30 +29,64 @@ void setup() {
 }
 
 // 点灯パターン（2進数にしたとき、1の場所が点灯） 
-const long PATTERNS[2][16] = {
+const long PATTERNS[2][27] = {
   {
-    0x0001,
-    0x0002,
-    0x0004,
-    0x0008,
-    0x0010,
-    0x0020,
-    0x0040,
-    0x0080,
-    0x0100,
-    0x0200,
-    0x0400,
-    0x0800,
-    0x1000,
-    0x2000,
-    0x4000,
-    0x8000
+    0x0083,   //0000000010000011
+    0x0085,
+    0x0086,
+    0x0103,
+    0x0105,
+    0x0106,
+    0x0203,
+    0x0205,
+    0x0206,
+    0x0403,
+    0x0405,
+    0x0406,
+    0x0803,
+    0x0805,
+    0x0806,
+    0x1003,
+    0x1005,
+    0x1006,
+    0x2003,
+    0x2005,
+    0x2006,
+    0x4003,
+    0x4005,
+    0x4006,
+    0x8003,
+    0x8005,
+    0x8006
   },
   {
-    0x8000,
-    0x4000,
-    0x2000,
-    0x1000
+    0xFF83,
+    0xFF85,
+    0xFF86,
+    0xFF83,
+    0xFF85,
+    0xFF86,
+    0xFF83,
+    0xFF85,
+    0xFF86,
+    0xFF83,
+    0xFF85,
+    0xFF86,
+    0xFF83,
+    0xFF85,
+    0xFF86,
+    0xFF83,
+    0xFF85,
+    0xFF86,
+    0xFF83,
+    0xFF85,
+    0xFF86,
+    0xFF83,
+    0xFF85,
+    0xFF86,
+    0xFF83,
+    0xFF85,
+    0xFF86,
   }
 };
 
@@ -100,16 +131,12 @@ void myShiftOut(int dataPin, int clockPin, long data, int dataLength)
   }
 }
 
-void data_switch()
+void data_out()
 {
-  //Button_Switchによって出力するデータを切り替え
-  if(digitalRead(Button_Switch) == LOW)
-  {
-    data_len = sizeof(PATTERNS[n_d]) / sizeof(PATTERNS[n_d][1]);
-    int sft = n_s % data_len; 
-    myShiftOut(SER, SRCLK, PATTERNS[n_d][sft], data_len);
-    n_s++;
-  }
+  data_len = sizeof(PATTERNS[n_d]) / sizeof(PATTERNS[n_d][1]);
+  int sft = n_s % data_len; 
+  myShiftOut(SER, SRCLK, PATTERNS[n_d][sft], 16);
+  n_s++;
 }
 
 void loop() 
@@ -120,7 +147,7 @@ void loop()
 
   digitalWrite(RCLK,  LOW);
 
-  data_switch();
+  data_out();
   
   digitalWrite(RCLK,  HIGH);
   
