@@ -1,3 +1,5 @@
+# coding: utf-8
+
 import RPi.GPIO as GPIO
 import time
 import signal, os
@@ -17,7 +19,8 @@ GPIO.setmode(GPIO.BCM)
 SRCLK = 16
 RCLK = 20
 SER = 21
-Button_judge = 26
+Button_judge = 19
+speaker = 26
 
 n_s = 0
 
@@ -26,6 +29,7 @@ GPIO.setup(SRCLK,GPIO.OUT)
 GPIO.setup(RCLK,GPIO.OUT)
 GPIO.setup(SER,GPIO.OUT)
 GPIO.setup(Button_judge,GPIO.IN)
+GPIO.setup(speaker, GPIO.OUT, initial = GPIO.LOW)
 
 PATTERNS = [
     0x8889,
@@ -63,16 +67,33 @@ def data_out():
     myShiftOut(SER, SRCLK, PATTERNS[sft], 16)
     n_s += 1
 
+def act_speaker(spk):
+    global n_s
+    data_len = len(PATTERNS)
+    num_speak = n_s % data_len
+    Hz = 100
+    p = GPIO.PWM(spk, 1)
+    
+    p.start(50)
+    if num_speak == data_len-1:
+        Hz = 400
+
+    p.ChangeFrequency(Hz)
+    time.sleep(0.2)
+
+    
+    p.stop()
+
 def main():
     while True:
+        act_speaker(speaker)
 
         GPIO.output(RCLK,GPIO.LOW)
 
         data_out()
 
         GPIO.output(RCLK,GPIO.HIGH)
-        
-        #otonarasu()
+
 
         time.sleep(0.5)
 
